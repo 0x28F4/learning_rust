@@ -23,20 +23,19 @@ fn main() {
     println!("{}", cliargs.join(" "));
     println!("{}", paths.join(" "));
 
+    let enable_line_numbers = cliargs.iter().any(|s| {s == "-n"});
     for path in paths {
-        let file = match File::open(&path) {
+        match File::open(&path) {
             Err(err) => {
                 println!("file not working {}", err.to_string());
                 continue;
             }
-            Ok(file) => file,
+            Ok(mut file) => output_file(&mut file, enable_line_numbers),
         };
-
-        output_file(file, cliargs.contains(&"-n".to_string()));
     }
 }
 
-fn output_file(mut file: File, enable_line_numbers: bool) {
+fn output_file(file: &mut File, enable_line_numbers: bool) {
     let mut contents = String::new();
     match file.read_to_string(&mut contents) {
         Err(err) => {
@@ -51,7 +50,7 @@ fn output_file(mut file: File, enable_line_numbers: bool) {
         return;
     }
 
-    for (i, line) in contents.split("\n").enumerate() {
+    for (i, line) in contents.lines().enumerate() {
         let prefix = if enable_line_numbers { format!("     {i}  ") } else {String::new()};
         println!("{prefix}{line}");
     }
