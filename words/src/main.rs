@@ -17,3 +17,8 @@ fn first_word_index(s: &String) -> usize {
     }
     s.len()
 }
+
+// no bueno
+fn second_word_index(s: &String) -> (usize, usize) {
+    (0, 0)
+}
