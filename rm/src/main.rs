@@ -9,7 +9,11 @@ struct Options {
 
 impl Options {
     fn new() -> Options {
-        Options{ recursive: false, force: false, path_names: Vec::new() }
+        Options {
+            recursive: false,
+            force: false,
+            path_names: Vec::new(),
+        }
     }
 }
 
@@ -36,19 +40,22 @@ fn main() {
     }
     for path_name in options.path_names {
         let path: &Path = Path::new(&path_name);
-        if path.is_dir() {
-            if !options.recursive {
-                println!("rm: cannot remove '{path:?}': Is a directory");
-                continue;
+        if !path.exists() {
+            if !options.force {
+                println!("rm: cannot remove '{path_name}': No such file or directory");
             }
-            std::fs::remove_dir_all(&path).unwrap_or_else(|e|{
-                println!("rm: cannot remove '{path:?}': {e}")
-            });
             continue;
         }
-        std::fs::remove_file(&path).unwrap_or_else(|e|{
-            println!("rm: cannot remove '{path:?}':{e}")
-        });
+        if path.is_dir() {
+            if !options.recursive {
+                println!("rm: cannot remove '{path_name}': Is a directory");
+                continue;
+            }
+            std::fs::remove_dir_all(&path)
+                .unwrap_or_else(|e| println!("rm: cannot remove '{path_name}': {e}"));
+            continue;
+        }
+        std::fs::remove_file(&path)
+            .unwrap_or_else(|e| println!("rm: cannot remove '{path_name}': {e}"));
     }
 }
-
