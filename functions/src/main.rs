@@ -73,3 +73,7 @@ fn foo(i: i32) -> i32 {
     println!("{i}");
     i
 }
+
+fn lifetime_elision(x: & i32) -> (&i32, &i32) {
+    (x,x)
+}
